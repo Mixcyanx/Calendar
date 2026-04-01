@@ -18,7 +18,7 @@ import {
 } from 'firebase/auth';
 import { db, auth, googleProvider } from './firebase';
 import { ScheduleItem, Theme } from './types';
-import { motion, AnimatePresence } from 'motion/react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const ADMIN_EMAIL = 's02204.double@gmail.com';
 
@@ -28,7 +28,18 @@ export default function App() {
   const [isAdmin, setIsAdmin] = useState(false);
   const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [passwordInput, setPasswordInput] = useState('');
-  const [theme, setTheme] = useState<Theme>((localStorage.getItem('appTheme') as Theme) || 'tech');
+  const [theme, setTheme] = useState<Theme>(() => {
+    try {
+      return (localStorage.getItem('appTheme') as Theme) || 'tech';
+    } catch (e) {
+      console.warn('localStorage access failed:', e);
+      return 'tech';
+    }
+  });
+
+  useEffect(() => {
+    console.log('App component mounted, theme:', theme);
+  }, []);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isExamFilter, setIsExamFilter] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
@@ -95,8 +106,12 @@ export default function App() {
 
   // 3. Theme
   useEffect(() => {
-    document.body.className = theme === 'tech' ? '' : `theme-${theme}`;
-    localStorage.setItem('appTheme', theme);
+    try {
+      document.body.className = theme === 'tech' ? '' : `theme-${theme}`;
+      localStorage.setItem('appTheme', theme);
+    } catch (e) {
+      console.warn('Theme update failed:', e);
+    }
   }, [theme]);
 
   // 3.5. Date Clamping
