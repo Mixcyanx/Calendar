@@ -180,8 +180,9 @@ export default function App() {
       await signInWithPopup(auth, googleProvider);
       setIsMenuOpen(false);
       setShowPasswordModal(true);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Login failed:", error);
+      alert(`登入失敗: ${error.message}\n\n請確認：\n1. Firebase 控制台已啟用 Google 登入\n2. 已將此網域加入「授權網域」\n3. 瀏覽器未封鎖彈出視窗`);
     }
   };
 
