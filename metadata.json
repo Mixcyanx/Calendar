@@ -1,0 +1,5 @@
+{
+  "name": "軟創一行事曆",
+  "description": "一個基於 Firebase Firestore 的即時同步行事曆系統，支援 Google 帳號管理員登入與多裝置同步。",
+  "requestFramePermissions": []
+}

@@ -1,0 +1,48 @@
+{
+  "entities": {
+    "ScheduleItem": {
+      "title": "Schedule Item",
+      "description": "An item in the calendar schedule.",
+      "type": "object",
+      "properties": {
+        "date": {
+          "type": "string",
+          "description": "The date of the item (YYYY/MM/DD)."
+        },
+        "course": {
+          "type": "string",
+          "description": "The name of the course."
+        },
+        "todo": {
+          "type": "string",
+          "description": "The task or event description."
+        },
+        "note": {
+          "type": "string",
+          "description": "Additional notes or metadata."
+        },
+        "isExam": {
+          "type": "boolean",
+          "description": "Whether the item is an exam."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When the item was created."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When the item was last updated."
+        }
+      },
+      "required": ["date", "course", "todo"]
+    }
+  },
+  "firestore": {
+    "/schedule/{itemId}": {
+      "schema": "ScheduleItem",
+      "description": "The collection of schedule items."
+    }
+  }
+}
