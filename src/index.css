@@ -83,15 +83,18 @@ body {
     linear-gradient(rgba(0, 242, 255, var(--grid-opacity)) 1px, transparent 1px),
     linear-gradient(90deg, rgba(0, 242, 255, var(--grid-opacity)) 1px, transparent 1px);
   background-size: 40px 40px;
+  background-attachment: fixed; /* 確保網格固定在背景 */
   color: var(--text-main);
   min-height: 100vh;
-  display: block; /* 改為 block 確保填滿寬度 */
+  width: 100%;
   overflow-x: hidden;
   transition: background-color 0.3s, color 0.3s;
 }
 
 .container {
   width: 100%;
+  max-width: 1400px; /* 電腦版限制最大寬度防止跑版 */
+  margin: 0 auto;    /* 置中 */
   min-height: 100vh;
   background: var(--bg-container);
   backdrop-filter: blur(12px);
@@ -99,8 +102,7 @@ body {
   position: relative;
   display: flex;
   flex-direction: column;
-  box-shadow: none;
-  margin: 0;
+  box-shadow: 0 0 50px rgba(0, 0, 0, 0.5);
 }
 
 /* --- 掃描線效果 --- */
@@ -606,6 +608,7 @@ tr:hover .action-btns {
   .container {
     padding: 120px 15px 100px 15px;
     background: var(--bg-body);
+    max-width: 100%;
   }
 
   .menu-container {

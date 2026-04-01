@@ -514,11 +514,11 @@ export default function App() {
         <table>
           <thead>
             <tr>
-              <th style={{ width: '15%' }}>日期</th>
-              <th style={{ width: '25%' }}>課程</th>
-              <th style={{ width: '35%' }}>項目</th>
-              <th style={{ width: '25%' }}>備註</th>
-              {isAdmin && <th style={{ width: '15%' }}>操作</th>}
+              <th style={{ width: '120px' }}>日期</th>
+              <th style={{ width: '200px' }}>課程</th>
+              <th style={{ width: 'auto' }}>項目</th>
+              <th style={{ width: '250px' }}>備註</th>
+              {isAdmin && <th style={{ width: '120px' }}>操作</th>}
             </tr>
           </thead>
           <tbody>
