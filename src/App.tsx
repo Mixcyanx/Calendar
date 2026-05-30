@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { 
   collection, 
   onSnapshot, 
@@ -48,6 +48,20 @@ export default function App() {
   const [editingItem, setEditingItem] = useState<ScheduleItem | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [hasAutoJumped, setHasAutoJumped] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  // Close hamburger menu on clicking outside
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setIsMenuOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   // Form states
   const [formData, setFormData] = useState({
@@ -295,7 +309,7 @@ export default function App() {
     <div className="container">
 
       {/* 三槓選單 */}
-      <div className="menu-container">
+      <div className="menu-container" ref={menuRef}>
         <button className="menu-btn" onClick={() => setIsMenuOpen(!isMenuOpen)}>
           <span>☰</span> 選單
         </button>
@@ -497,7 +511,7 @@ export default function App() {
                     )}
                     {item.todo}
                   </td>
-                  <td style={{ color: 'var(--text-secondary)', fontSize: '12px' }}>{item.note || '-'}</td>
+                  <td style={{ color: 'var(--text-secondary)', fontSize: '12px' }}>{item.note || '無備註'}</td>
                   {isAdmin && (
                     <td>
                       <div className="action-btns">
