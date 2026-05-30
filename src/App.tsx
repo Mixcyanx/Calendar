@@ -47,6 +47,7 @@ export default function App() {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<ScheduleItem | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [hasAutoJumped, setHasAutoJumped] = useState(false);
 
   // Form states
   const [formData, setFormData] = useState({
@@ -134,6 +135,25 @@ export default function App() {
     });
     return Array.from(months).sort();
   }, [items, isExamFilter]);
+
+  useEffect(() => {
+    if (uniqueMonths.length > 0 && !hasAutoJumped && !isLoading) {
+      const today = new Date();
+      const currentYearMonth = `${today.getFullYear()}/${(today.getMonth() + 1).toString().padStart(2, '0')}`;
+      const index = uniqueMonths.indexOf(currentYearMonth);
+      if (index !== -1) {
+        setCurrentMonthIndex(index);
+      } else {
+        const closestIndex = uniqueMonths.findIndex(m => m >= currentYearMonth);
+        if (closestIndex !== -1) {
+          setCurrentMonthIndex(closestIndex);
+        } else {
+          setCurrentMonthIndex(uniqueMonths.length - 1);
+        }
+      }
+      setHasAutoJumped(true);
+    }
+  }, [uniqueMonths, hasAutoJumped, isLoading]);
 
   const currentMonth = uniqueMonths[currentMonthIndex] || '';
 
@@ -271,72 +291,8 @@ export default function App() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const seedData = async () => {
-    if (!isAdmin || !window.confirm("確認要匯入初始預設數據？這將會新增多筆項目。")) return;
-    setIsLoading(true);
-    const initialData = [
-      { date: "2026/02/23", course: "國文", todo: "開學準備", note: "領取課本", isExam: false },
-      { date: "2026/02/24", course: "程式設計(二)", todo: "環境設定", note: "安裝 VS Code", isExam: false },
-      { date: "2026/02/25", course: "作業系統概論", todo: "課程大綱", note: "確認教科書", isExam: false },
-      { date: "2026/02/26", course: "英文", todo: "分班測驗", note: "10:00 AM", isExam: true },
-      { date: "2026/03/02", course: "作業系統概論", todo: "課程介紹", note: "評分標準說明", isExam: false },
-      { date: "2026/03/05", course: "Python程式設計", todo: "安裝環境", note: "Anaconda / Jupyter", isExam: false },
-      { date: "2026/03/10", course: "國文", todo: "開學考", note: "範圍：第一課至第三課", isExam: true },
-      { date: "2026/03/15", course: "程式設計(二)", todo: "作業一繳交", note: "使用 C++ 實作", isExam: false },
-      { date: "2026/03/20", course: "作業系統概論", todo: "小考", note: "範圍：Ch 1-2", isExam: true },
-      { date: "2026/03/25", course: "英文", todo: "單字測驗", note: "Unit 1-3", isExam: true },
-      { date: "2026/03/30", course: "Python程式設計", todo: "小考", note: "基礎語法", isExam: true },
-      { date: "2026/04/11", course: "國文", todo: "習作一（飲食札記）", note: "", isExam: false },
-      { date: "2026/04/11", course: "程式設計(二)", todo: "上機考", note: "", isExam: true },
-      { date: "2026/04/16", course: "作業系統概論", todo: "期中考", note: "範圍：1, 4, 5, 6", isExam: true },
-      { date: "2026/04/17", course: "英文", todo: "期中考", note: "範圍：單元7-9", isExam: true },
-      { date: "2026/04/22", course: "Python程式設計", todo: "期中考", note: "", isExam: true },
-      { date: "2026/05/16", course: "國文", todo: "分組報告", note: "", isExam: false },
-      { date: "2026/05/16", course: "程式設計(二)", todo: "上機考", note: "", isExam: true },
-      { date: "2026/05/22", course: "英文", todo: "口頭報告", note: "33-21號", isExam: false },
-      { date: "2026/05/29", course: "英文", todo: "口頭報告", note: "20-1號", isExam: false },
-      { date: "2026/05/23", course: "國文", todo: "分組報告、習作二", note: "", isExam: false },
-      { date: "2026/05/30", course: "國文", todo: "分組報告", note: "", isExam: false },
-      { date: "2026/06/10", course: "Python程式設計", todo: "期末考", note: "", isExam: true },
-      { date: "2026/06/11", course: "作業系統概論", todo: "期末考", note: "範圍：2, 3, 7, 8", isExam: true },
-      { date: "2026/06/12", course: "英文", todo: "期末考", note: "範圍：單元10-12", isExam: true },
-      { date: "2026/06/13", course: "國文", todo: "期末考", note: "", isExam: true },
-      { date: "2026/06/13", course: "程式設計(二)", todo: "上機考", note: "", isExam: true },
-    ];
-
-    try {
-      for (const item of initialData) {
-        await addDoc(collection(db, 'schedule'), {
-          ...item,
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString()
-        });
-      }
-      alert("數據匯入成功！");
-    } catch (error) {
-      console.error("Seed failed:", error);
-      alert("數據匯入失敗，請檢查權限。");
-    } finally {
-      setIsLoading(false);
-      setIsMenuOpen(false);
-    }
-  };
-
   return (
     <div className="container">
-      {/* 管理員快速新增按鈕 (FAB) */}
-      {isAdmin && !isFormOpen && (
-        <motion.button 
-          initial={{ scale: 0, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.9 }}
-          className="fab-add"
-          onClick={() => { setIsFormOpen(true); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
-        >
-          <span>➕</span>
-        </motion.button>
-      )}
 
       {/* 三槓選單 */}
       <div className="menu-container">
@@ -357,9 +313,6 @@ export default function App() {
                 <>
                   <button className="dropdown-item" onClick={() => { setIsFormOpen(!isFormOpen); setIsMenuOpen(false); }}>
                     <span>➕</span> {isFormOpen ? '關閉表單' : '新增事項'}
-                  </button>
-                  <button className="dropdown-item" onClick={seedData}>
-                    <span>📥</span> 匯入初始數據
                   </button>
                 </>
               )}
